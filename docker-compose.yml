@@ -1,0 +1,59 @@
+version: '3.4'
+
+services:
+  nginx:
+    image: nginx:stable-alpine
+    container_name: nginx
+    ports:
+      - "8088:80"
+    depends_on:
+      - app
+      - mysql
+    networks:
+      - spaceburger
+    volumes:
+      - "./:/var/www/html"
+      - "./build/nginx/default.conf:/etc/nginx/conf.d/default.conf"
+
+  app:
+    image: spaceburger
+    build:
+      args:
+        user: spaceburger
+        uid: 1000
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: spaceburger
+    restart: unless-stopped
+    volumes:
+      - "./:/var/www/html"
+    ports: 
+      - "9000:9000"
+    networks:
+      - spaceburger
+
+  mysql:
+    image: mysql:8.0.29
+    container_name: mysql
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3306:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=spaceburger
+      - MYSQL_USER=spaceburger
+      - MYSQL_PASSWORD=secret
+      - MYSQL_ROOT_PASSWORD=secret
+      - SERVICE_TAGS=dev
+      - SERVICE_NAME=mysql
+    networks:
+      - spaceburger
+
+volumes:
+  dbdata:
+    driver: local
+
+networks:
+  spaceburger:

@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\JsonResponse;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -43,8 +44,11 @@ class Handler extends ExceptionHandler
      */
     public function register()
     {
-        $this->reportable(function (Throwable $e) {
-            //
+        $this->renderable(function (UserNotFoundException $e) {
+            return new JsonResponse(
+                ['message' => $e->getMessage()],
+                $e->getStatusCode()
+            );
         });
     }
 }

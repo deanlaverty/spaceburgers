@@ -13,22 +13,56 @@ final class CreateUserTokenTest extends TestCase
 {
     use RefreshDatabase, WithFaker;
 
-    /**
-     * A basic feature test example.
-     *
-     * @return void
-     */
-    public function test_user_can_create_token()
+    public function test_user_can_create_token(): void
     {
-        $user = User::factory()->create();
+        $password = $this->faker()->password;
+
+        $user = User::factory()->create([
+            'password' => $password,
+        ]);
 
         $response = $this->postJson('/api/sanctum/token', [
             'email' => $user->email,
-            'password' => $user->password,
-            'device_name' => 'mobile',
+            'password' => $password,
+            'device_name' => $this->faker->title,
         ]);
 
         $response
-            ->assertStatus(201);
+            ->assertStatus(200);
+    }
+
+    public function test_user_cannot_create_token_if_they_dont_exist(): void
+    {
+        $response = $this->postJson('/api/sanctum/token', [
+            'email' => $this->faker()->email,
+            'password' => $this->faker()->password,
+            'device_name' => $this->faker->title,
+        ]);
+
+        $response
+            ->assertStatus(404);
+    }
+
+    /**
+     * @test
+     * @dataProvider createTokenValidationProvider
+     */
+    public function test_user_cannot_create_token_without_valid_payload($formInput): void
+    {
+        $response = $this->postJson('/api/sanctum/token', [
+            $formInput => '',
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors($formInput);
+    }
+
+    public function createTokenValidationProvider(): array
+    {
+        return [
+            ['email'],
+            ['password'],
+            ['device_name'],
+        ];
     }
 }

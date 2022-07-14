@@ -31,6 +31,27 @@ final class CreateUserTokenTest extends TestCase
             ->assertStatus(200);
     }
 
+    public function test_user_cannot_create_token_with_incorrect_password(): void
+    {
+        $password = $this->faker()->password;
+
+        $user = User::factory()->create([
+            'password' => $password,
+        ]);
+
+        $response = $this->postJson('/api/sanctum/token', [
+            'email' => $user->email,
+            'password' => $this->faker()->password,
+            'device_name' => $this->faker->title,
+        ]);
+
+        $response
+            ->assertStatus(422)
+            ->assertJson([
+                'message' => 'The provided credentials are incorrect.',
+            ]);
+    }
+
     public function test_user_cannot_create_token_if_they_dont_exist(): void
     {
         $response = $this->postJson('/api/sanctum/token', [
@@ -40,7 +61,10 @@ final class CreateUserTokenTest extends TestCase
         ]);
 
         $response
-            ->assertStatus(404);
+            ->assertStatus(404)
+            ->assertJson([
+                'message' => 'User not found.',
+            ]);
     }
 
     /**

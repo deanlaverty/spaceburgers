@@ -11,6 +11,10 @@ use Illuminate\Http\Request;
 
 class CreateOrderController
 {
+    public function __construct(private CreateOrderAction $createOrderAction)
+    {
+
+    }
     public function __invoke(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -19,7 +23,7 @@ class CreateOrderController
             'bun' => 'required|exists:buns,pkid',
         ]);
 
-        $order = (new CreateOrderAction())->handle(new OrderData(...$validated));
+        $order = $this->createOrderAction->handle(new OrderData(...$validated));
 
         return new JsonResponse([
             'message' => 'Order created successfully!.'

@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CreateUserTokenController;
 use App\Http\Controllers\GetFillingsController;
 use App\Http\Controllers\GetBunsController;
+use App\Http\Controllers\CreateOrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,4 +27,5 @@ Route::post('/sanctum/token', CreateUserTokenController::class);
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/fillings', GetFillingsController::class);
     Route::get('/buns', GetBunsController::class);
+    Route::post('/order', CreateOrderController::class);
 });

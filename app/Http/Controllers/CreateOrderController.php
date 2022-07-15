@@ -15,6 +15,7 @@ class CreateOrderController
     {
 
     }
+
     public function __invoke(Request $request): JsonResponse
     {
         $validated = $request->validate([

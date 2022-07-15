@@ -2,6 +2,8 @@
 
 This was built all with tests so there is no frontend due to time constraints. 
 
+Built with PHP 8.1 on Laravel 9.
+
 ## Setup
 
 - Run docker-compose up -d --build

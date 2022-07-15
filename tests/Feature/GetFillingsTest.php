@@ -39,4 +39,15 @@ final class GetFillingsTest extends TestCase
                 ]
             ]);
     }
+
+    public function test_unauthorised_user_cannot_access_fillings(): void
+    {
+        $response = $this->getJson('/api/fillings');
+
+        $response
+            ->assertStatus(401)
+            ->assertJson([
+                'message' => 'Unauthenticated.',
+            ]);
+    }
 }

@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CreateUserTokenController;
+use App\Http\Controllers\GetFillingsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,3 +21,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::post('/sanctum/token', CreateUserTokenController::class);
+
+Route::get('/fillings', GetFillingsController::class)->middleware('auth:sanctum');
